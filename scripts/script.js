@@ -8,7 +8,7 @@ function Player(playerName, playerMarker) {
     return {name, play}
 }
 
-function Gameboard(results) {
+function GameBoard(results) {
     let board = []
 
     const start = () => {
@@ -69,44 +69,96 @@ function Gameboard(results) {
             results.tie = true
         }
     }
-    return { start, setMaker}
+    return { board, start, setMaker}
 }
 
 function GameController() {
+    const buttons = document.querySelector('button')
+    const boardDivs = document.querySelector('#board div')
+    const turnDiv = document.querySelector('.turn')
+
+    let player1 = null
+    let player2 = null
     let i = 0
     let j = 0
-    const player1 = Player('Esther', 'X')
-    const player2 = Player('Hamu', '$')
     const results = {
         tie: false,
         won: false,
         playerName: ''
     }
-    let player_turn = 'first'
-    const gameboard = Gameboard(results)
-    gameboard.start()
-    while (!results.tie && !results.won) {
-        if (player_turn === 'first'){
-            results.playerName = player1.name
-            i = prompt(`${player1.name}'s turn Enter i number:`)
-            j = prompt(`${player1.name}'s turn Enter j number:`)
-            player1.play(Number(i), Number(j), gameboard)
-            player_turn = 'second'
-        } else {
-            results.playerName = player2.name
-            i = prompt(`${player2.name}'s turn Enter i number:`)
-            j = prompt(`${player2.name}'s turn Enter j number:`)
-            player2.play(Number(i), Number(j), gameboard)
-            player_turn = 'first'
+    let playerTurn = 'first'
+
+    const setButtons = () => {
+        console.log(buttons)
+        buttons.forEach((button) => {
+            button.addEventListener('click', (e) => {
+                const namePlayerOne = document.querySelector('input[name="player1"]').value
+                const namePlayerTwo = document.querySelector('input[name="player2"]').value
+                const maker = e.target.id
+                if (maker = 'x') {
+                    player1 = Player(namePlayerOne, 'X')
+                    player2 = Player(namePlayerTwo, 'O')
+                } else {
+                    player1 = Player(namePlayerOne, 'O')
+                    player2 = Player(namePlayerTwo, 'X')
+                }
+            })
+        })
+    }
+
+    const displayBoard = (board) => {
+        for (let i=0; i < board.length; i++) {
+            for (let j=0; j < board.length; j++) {
+                document.querySelector(`#${i}_${j}`).innerText = board[i][j] !== 0 ? board[i][j] : ''
+            }
         }
     }
-    if (results.tie) {
-        console.log(`It's a tie`)
+    
+    const setDivs = (gameboard) => {
+        boardDivs.forEach((div) => {
+            div.addEventListener('click', (e) => {
+                const divId = e.target.id
+                [i, j] = divId.split('_')
+                if(playerTurn === 'first') {
+                    results.playerName = player1.name
+                    player1.play(i, j, gameboard)
+                    playerTurn = 'second'
+                } else {
+                    results.playerName = player2.name
+                    player2.play(i, j, gameboard)
+                    playerTurn = 'first'
+                }
+                turnDiv.innerText(`${results.playerName}'s Turn`)
+            })
+        })
     }
 
-    if (results.won) {
-        console.log(`${results.playerName} won`)
-    }
+    return { results, playerTurn, setButtons, displayBoard, setDivs }
 }
 
-//GameController()
+const resultsDiv = document.querySelector('#results')
+const gameController = GameController()
+const gameBoard = GameBoard(gameController.results)
+
+gameBoard.start()
+gameController.setButtons()
+
+
+while (!gameController.results.tie && !gameController.results.won) {
+    gameController.displayBoard(board)
+    gameController.setDivs(board)
+}
+
+resultsDiv.style.display = 'flex'
+resultsDiv.style.flexDirection = 'column'
+resultsDiv.style.alignItems = 'center'
+
+if (gameController.results.tie) {
+    resultsDiv.innerText = "It's a tie"
+    console.log(`It's a tie`)
+}
+
+if (results.won) {
+    resultsDiv.innerText = `${results.playerName} won`
+    console.log(`${results.playerName} won`)
+}
