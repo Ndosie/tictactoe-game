@@ -9,10 +9,8 @@ function Player(playerName, playerMarker) {
 }
 
 function GameBoard(results) {
-    let board = []
-
+    const board = [[0,0,0], [0,0,0],[0,0,0]]
     const start = () => {
-        board = [[0,0,0], [0,0,0],[0,0,0]]
         displayBoard()
     }
 
@@ -73,35 +71,37 @@ function GameBoard(results) {
 }
 
 function GameController() {
-    const buttons = document.querySelector('button')
-    const boardDivs = document.querySelector('#board div')
+    const buttons = document.querySelectorAll('.mark')
+    const boardDivs = document.querySelectorAll('#board div')
     const turnDiv = document.querySelector('.turn')
 
     let player1 = null
     let player2 = null
-    let i = 0
-    let j = 0
     const results = {
         tie: false,
         won: false,
         playerName: ''
     }
     let playerTurn = 'first'
+    const gameBoard = GameBoard(results)
+    gameBoard.start()
 
     const setButtons = () => {
-        console.log(buttons)
         buttons.forEach((button) => {
             button.addEventListener('click', (e) => {
                 const namePlayerOne = document.querySelector('input[name="player1"]').value
                 const namePlayerTwo = document.querySelector('input[name="player2"]').value
-                const maker = e.target.id
-                if (maker = 'x') {
+                const mark = e.target.id
+                if (mark === 'x') {
                     player1 = Player(namePlayerOne, 'X')
                     player2 = Player(namePlayerTwo, 'O')
                 } else {
                     player1 = Player(namePlayerOne, 'O')
                     player2 = Player(namePlayerTwo, 'X')
                 }
+                document.querySelector('input[name="player1"]').value = ''
+                document.querySelector('input[name="player2"]').value = ''
+                turnDiv.innerText = `${player1.name}'s Turn`
             })
         })
     }
@@ -109,56 +109,69 @@ function GameController() {
     const displayBoard = (board) => {
         for (let i=0; i < board.length; i++) {
             for (let j=0; j < board.length; j++) {
-                document.querySelector(`#${i}_${j}`).innerText = board[i][j] !== 0 ? board[i][j] : ''
+                document.getElementById(`${i}_${j}`).innerText = board[i][j] !== 0 ? board[i][j] : ''
             }
         }
     }
+
+    const resetBoard = (board) => {
+        for (let i=0; i < board.length; i++) {
+            for (let j=0; j < board.length; j++) {
+                board[i][j] = 0
+            }
+        }
+        displayBoard(board)
+        gameBoard.start()
+    }
     
-    const setDivs = (gameboard) => {
+    const setDivs = () => {
         boardDivs.forEach((div) => {
             div.addEventListener('click', (e) => {
                 const divId = e.target.id
-                [i, j] = divId.split('_')
+                const [i, j] = divId.split('_')
                 if(playerTurn === 'first') {
                     results.playerName = player1.name
-                    player1.play(i, j, gameboard)
+                    player1.play(i, j, gameBoard)
                     playerTurn = 'second'
                 } else {
                     results.playerName = player2.name
-                    player2.play(i, j, gameboard)
+                    player2.play(i, j, gameBoard)
                     playerTurn = 'first'
                 }
-                turnDiv.innerText(`${results.playerName}'s Turn`)
+                turnDiv.innerText = playerTurn === 'first' ? `${player1.name}'s Turn` : `${player2.name}'s Turn`
+                displayBoard(gameBoard.board)
+
+                if(results.won || results.tie) {
+                    resetBoard(gameBoard.board)
+                    showResults()
+                }
             })
         })
     }
 
-    return { results, playerTurn, setButtons, displayBoard, setDivs }
+    const showResults = () => {
+
+        if (results.won) {
+            turnDiv.innerText = `${results.playerName} won. Click restart to start the game`
+            console.log(`${results.playerName} won`)
+        }
+
+        if (results.tie) {
+            turnDiv.innerText = "It's a tie. Click restart to restart the game"
+            console.log(`It's a tie`)
+        }
+    }
+
+    return { turnDiv, setButtons, setDivs }
 }
 
-const resultsDiv = document.querySelector('#results')
+const restartBtn = document.getElementById('restart-btn')
 const gameController = GameController()
-const gameBoard = GameBoard(gameController.results)
-
-gameBoard.start()
 gameController.setButtons()
+gameController.setDivs()
 
-
-while (!gameController.results.tie && !gameController.results.won) {
-    gameController.displayBoard(board)
-    gameController.setDivs(board)
-}
-
-resultsDiv.style.display = 'flex'
-resultsDiv.style.flexDirection = 'column'
-resultsDiv.style.alignItems = 'center'
-
-if (gameController.results.tie) {
-    resultsDiv.innerText = "It's a tie"
-    console.log(`It's a tie`)
-}
-
-if (results.won) {
-    resultsDiv.innerText = `${results.playerName} won`
-    console.log(`${results.playerName} won`)
-}
+restartBtn.addEventListener('click', () => {
+    gameController.setButtons()
+    gameController.setDivs()
+    gameController.turnDiv.innerText = "You will see who's Turn Here"
+})
