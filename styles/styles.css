@@ -15,7 +15,7 @@ h1, p {
     width: 500px;
     padding: 8px;
     display: grid;
-    grid-template-rows: 50px 1fr 30px 2fr;
+    grid-template-rows: 50px 1fr 80px 2fr;
     justify-items: center;
 }
 
@@ -72,6 +72,8 @@ input:focus {
 .turn {
     font-size: larger;
     margin: 8px 0;
+    display: flex;
+    align-items: center;
 }
 
 #board {
@@ -95,18 +97,4 @@ input:focus {
 
 #board div:hover {
     cursor: pointer;
-}
-
-#results {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-
-#results p {
-    display: none;
-}
-
-#results button {
-    width: 150px;
 }

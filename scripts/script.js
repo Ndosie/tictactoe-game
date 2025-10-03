@@ -56,6 +56,10 @@ function GameBoard(results) {
             results.won = true
             return
         }
+        if (board[0][2] === maker && board[1][1] === maker && board[2][0] === maker) {
+            results.won = true
+            return
+        }
     }
 
     const checkTie = () => {
@@ -74,6 +78,7 @@ function GameController() {
     const buttons = document.querySelectorAll('.mark')
     const boardDivs = document.querySelectorAll('#board div')
     const turnDiv = document.querySelector('.turn')
+    const boardDiv = document.querySelector('#board')
 
     let player1 = null
     let player2 = null
@@ -91,6 +96,10 @@ function GameController() {
             button.addEventListener('click', (e) => {
                 const namePlayerOne = document.querySelector('input[name="player1"]').value
                 const namePlayerTwo = document.querySelector('input[name="player2"]').value
+                if (namePlayerOne === '' || namePlayerTwo ==='') {
+                    alert('Fill player names before select a maker.')
+                    return
+                }
                 const mark = e.target.id
                 if (mark === 'x') {
                     player1 = Player(namePlayerOne, 'X')
@@ -152,26 +161,25 @@ function GameController() {
     const showResults = () => {
 
         if (results.won) {
-            turnDiv.innerText = `${results.playerName} won. Click restart to start the game`
+            turnDiv.innerText = `${results.playerName} won. Start filling the board to replay
+            Or Refill players' details and select a marker.`
             console.log(`${results.playerName} won`)
         }
 
         if (results.tie) {
-            turnDiv.innerText = "It's a tie. Click restart to restart the game"
+            turnDiv.innerText = `It's a tie. Start filling the board to replay
+            Or Refill players' details and select a marker.`
             console.log(`It's a tie`)
         }
+
+        results.playerName = ''
+        results.tie = false
+        results.won = false
     }
 
-    return { turnDiv, setButtons, setDivs }
+    return { boardDiv, turnDiv, setButtons, setDivs }
 }
 
-const restartBtn = document.getElementById('restart-btn')
 const gameController = GameController()
 gameController.setButtons()
 gameController.setDivs()
-
-restartBtn.addEventListener('click', () => {
-    gameController.setButtons()
-    gameController.setDivs()
-    gameController.turnDiv.innerText = "You will see who's Turn Here"
-})

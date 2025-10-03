@@ -12,11 +12,11 @@
         <div class="inputs">
             <div>
                 <label for="player1">First Player</label>
-                <input type="text" name="player1" id="player1" placeholder="Enter your Name"/>
+                <input type="text" name="player1" id="player1" placeholder="Enter your Name" required/>
             </div>
             <div>
                 <label for="player2">Second Player</label>
-                <input type="text" name="player2" id="player2" placeholder="Enter your Name"/>
+                <input type="text" name="player2" id="player2" placeholder="Enter your Name" required/>
             </div>
             <div class="makers">
                 <p>First Player Select your maker</p>
@@ -26,7 +26,7 @@
                 </div>
             </div>
         </div>
-        <div class="turn">You will see who's Turn Here</div>
+        <div class="turn">You will see who's turn Here</div>
         <div id="board">
             <div id="0_0"></div>
             <div id="0_1"></div>
@@ -37,9 +37,6 @@
             <div id="2_0"></div>
             <div id="2_1"></div>
             <div id="2_2"></div>
-        </div>
-        <div id="results">
-            <button id="restart-btn">Restart</button>
         </div>
     </div>
     <script src="scripts/script.js"></script>
